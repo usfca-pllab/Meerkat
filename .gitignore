@@ -12,3 +12,4 @@ target
 graph.dot
 graph.pdf
 .idea
+.bsp/
