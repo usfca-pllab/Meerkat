@@ -37,6 +37,8 @@ import scala.collection.JavaConversions._
 import org.meerkat.tree.TerminalSymbol
 
 object Parsers { import AbstractCPSParsers._
+
+  val foo = 42
   
   implicit def obj1[ValA,ValB](implicit vals: ValA|~|ValB) = new CanBuildSequence[NonPackedNode,NonPackedNode,ValA,ValB] {
     implicit val m1 = obj4; implicit val m2 = obj4

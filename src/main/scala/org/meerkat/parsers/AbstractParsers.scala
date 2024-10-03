@@ -286,8 +286,9 @@ trait AbstractParsers {
 //    }
   }
 }
- 
+
 object AbstractCPSParsers extends AbstractParsers {  import AbstractParser._
+  var enableMemoization = false
     
   type Result[+T] = CPSResult[T]
   
@@ -365,17 +366,19 @@ object AbstractCPSParsers extends AbstractParsers {  import AbstractParser._
   }
   
   import CPSResult.memo
-  
-  protected def memoize[A: Memoizable](p: => AbstractParser[A])(implicit obj: ClassTag[Result[A]]): AbstractParser[A] = {
+
+  private def memoize[A: Memoizable](p: => AbstractParser[A])(implicit obj: ClassTag[Result[A]]): AbstractParser[A] = {
     lazy val q: AbstractParser[A] = p
     var results: Array[Result[A]] = null
     new AbstractParser[A] {
-      def apply(input: Input, i: Int, sppfLookup: SPPFLookup) = {
+      def apply(input: Input, i: Int, sppfLookup: SPPFLookup) = if (enableMemoization) {
         if (results == null) results = new Array(input.length + 1)
         val result = results(i)
         if (result == null) { results(i) = memo(q(input,i,sppfLookup)); results(i) } 
         else result
-      }   
+      } else {
+        q(input, i, sppfLookup)
+      }
       def symbol = q.symbol
       override def reset = { 
         val done = results == null
