@@ -56,7 +56,9 @@ object Parsers { import AbstractCPSParsers._
     type SequenceBuilder = Parsers.SequenceBuilder[V]
     def builderSeq(f: Slot => Sequence) = new Parsers.SequenceBuilder[V] { def apply(slot: Slot) = f(slot) }
   }
-  
+  //ignore  below just wanted to chekc i am calling correct meerkat library 
+  val foo = 42 // testing 
+ 
   implicit object obj2 extends CanBuildAlternative[NonPackedNode] {
     implicit val m = obj4
     def result(e: NonPackedNode, p: Slot, nt: Head, sppfLookup: SPPFLookup) = sppfLookup.getNonterminalNode(nt, p, e)
@@ -161,9 +163,6 @@ object Parsers { import AbstractCPSParsers._
     def ~ [U](p: Symbol[U])(implicit tuple: V|~|U, layout: Layout) = this ~~ layout.get ~~ p
     def ~~ [U](p: Symbol[U])(implicit tuple: V|~|U) = seq(this, p)
   
-//    def ~ (p: String)(implicit layout: Layout) = (this ~~ layout.get).~~(p)
-//    def ~~ (p: String)(implicit tuple: this.Value|~|NoValue) = { implicit val o = obj1(tuple); seq(this, p) }
-    
     def & [U](f: V => U) = new SequenceBuilderWithAction[U] {
       def apply(slot: Slot) = SequenceBuilder.this(slot)
       def action = Option({ x => f(x.asInstanceOf[V]) })
@@ -303,8 +302,16 @@ object Parsers { import AbstractCPSParsers._
              })
   
   def ntAlt[Val](name: String, p: => AlternationBuilder[Val]) = nonterminalAlt(name, p)  
+  //added below 
+  def ntAltNoMemo[Val](name: String, p: => AlternationBuilder[Val]) = nonterminalAltNoMemo(name, p)
+  
   def ntSeq[Val](name: String, p: => SequenceBuilder[Val]) = nonterminalSeq(name, p)
+  //added below 
+  def ntSeqNoMemo[Val](name: String, p: => SequenceBuilder[Val]) = nonterminalSeqNoMemo(name, p)
+
   def ntSym[Val](name: String, p: => AbstractSymbol[NonPackedNode,Val]) = nonterminalSym(name, p)
+  //added below wrapper
+  def ntSymNoMemo[Val](name: String, p: => AbstractSymbol[NonPackedNode,Val]) = nonterminalSymNoMemo(name, p)
   
   def ltAlt[Val <: NoValue](name: String, p: => AlternationBuilder[Val]): Layout = layout(layoutAlt(name, p))  
   def ltSeq[Val <: NoValue](name: String, p: => SequenceBuilder[Val]): Layout = layout(layoutSeq(name, p))
