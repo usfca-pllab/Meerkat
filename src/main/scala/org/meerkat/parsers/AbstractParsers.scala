@@ -273,17 +273,6 @@ trait AbstractParsers {
         }) }
     }
     
-//    def flatMap2[A,B,ValA,ValB](p: AbstractSymbol[A,ValA], f: A => AbstractSymbol[B,ValB])(implicit builder: CanBuildSequence[A,B,ValA,ValB]): builder.SequenceBuilder = {
-//      import builder._ 
-//      builderSeq { slot =>
-//        builder.sequence(new AbstractParser[builder.T] with Slot {
-//          def apply(input: Input, i: Int, sppfLookup: SPPFLookup) = p(input,i,sppfLookup) flatMap { x => f(x)(input,index(x),sppfLookup).smap { intermediate(x,_,this,sppfLookup) } }
-//          def size = 2; def symbol = org.meerkat.tree.Sequence(p.symbol, org.meerkat.tree.SimpleNonterminal(s"${f.hashCode}"))
-//          def ruleType = org.meerkat.tree.PartialRule(slot.ruleType.head, slot.ruleType.body, size)
-//          override def toString = s"[${ruleType.toString()},$size]"
-//          override def reset = p.reset
-//        }) }
-//    }
   }
 }
  
@@ -295,45 +284,88 @@ object AbstractCPSParsers extends AbstractParsers {  import AbstractParser._
     import builder._
     lazy val q: Nonterminal = nonterminal (name, memoize(alt(q,p))); q
   }
-  
+  //added below
+  def nonterminalSymNoMemo[A,ValA](name: String, p: => AbstractSymbol[A,ValA])(implicit builder: CanBuildNonterminal[A,ValA], b: CanBuildAlternative[A], obj: ClassTag[Result[A]]): builder.Nonterminal = { 
+      import builder._
+      lazy val q: Nonterminal = nonterminal(name, alt(q,p)); q
+  } 
   def nonterminalSeq[A,ValA](name: String, p: => AbstractSequenceBuilder[A,ValA])(implicit builder: CanBuildNonterminal[A,ValA], b: CanBuildAlternative[A], obj: ClassTag[Result[A]]): builder.Nonterminal = { 
     import builder._
     lazy val q: Nonterminal = nonterminal (name, memoize(alt(q,p))); q
   }
-  
+  //added below 
+  def nonterminalSeqNoMemo[A,ValA](name: String, p: => AbstractSequenceBuilder[A,ValA])(implicit builder: CanBuildNonterminal[A,ValA], b: CanBuildAlternative[A], obj: ClassTag[Result[A]]): builder.Nonterminal = { 
+      import builder._
+      lazy val q: Nonterminal = nonterminal(name, alt(q,p)); q
+  }
   def nonterminalAlt[A,ValA](name: String, p: => AbstractAlternationBuilder[A,ValA])(implicit builder: CanBuildNonterminal[A,ValA], obj: ClassTag[Result[A]]): builder.Nonterminal = { 
     import builder._
     lazy val q: Nonterminal = builder nonterminal (name, memoize(p(q))); q
+  }
+  //added below
+  def nonterminalAltNoMemo[A,ValA](name: String, p: => AbstractAlternationBuilder[A,ValA])(implicit builder: CanBuildNonterminal[A,ValA], obj: ClassTag[Result[A]]): builder.Nonterminal = { 
+      import builder._
+      lazy val q: Nonterminal = builder nonterminal(name, p(q)); q
   }
   
   def layoutSym[A,ValA <: NoValue](name: String, p: => AbstractSymbol[A,ValA])(implicit builder: CanBuildLayout[A,ValA], b: CanBuildAlternative[A], obj: ClassTag[Result[A]]): builder.Nonterminal = { 
     import builder._
     lazy val q: Nonterminal = builder layout (name, memoize(alt(q,p))); q
   }
-  
+  //added below
+  def layoutSymNoMemo[A,ValA <: NoValue](name: String, p: => AbstractSymbol[A,ValA])(implicit builder: CanBuildLayout[A,ValA], b: CanBuildAlternative[A], obj: ClassTag[Result[A]]): builder.Nonterminal = { 
+       import builder._
+       lazy val q: Nonterminal = builder layout(name, alt(q,p)); q
+   }
+ 
   def layoutSeq[A,ValA <: NoValue](name: String, p: => AbstractSequenceBuilder[A,ValA])(implicit builder: CanBuildLayout[A,ValA], b: CanBuildAlternative[A], obj: ClassTag[Result[A]]): builder.Nonterminal = { 
     import builder._
     lazy val q: Nonterminal = builder layout (name, memoize(alt(q,p))); q
+  }
+  //  added below 
+  def layoutSeqNoMemo[A,ValA <: NoValue](name: String, p: => AbstractSequenceBuilder[A,ValA])(implicit builder: CanBuildLayout[A,ValA], b: CanBuildAlternative[A], obj: ClassTag[Result[A]]): builder.Nonterminal = { 
+      import builder._
+      lazy val q: Nonterminal = builder layout(name, alt(q,p)); q
   }
   
   def layoutAlt[A,ValA <: NoValue](name: String, p: => AbstractAlternationBuilder[A,ValA])(implicit builder: CanBuildLayout[A,ValA], obj: ClassTag[Result[A]]): builder.Nonterminal = { 
     import builder._
     lazy val q: Nonterminal = builder layout (name, memoize(p(q))); q
   }
+  //added below 
+  def layoutAltNoMemo[A,ValA <: NoValue](name: String, p: => AbstractAlternationBuilder[A,ValA])(implicit builder: CanBuildLayout[A,ValA], obj: ClassTag[Result[A]]): builder.Nonterminal = { 
+      import builder._
+      lazy val q: Nonterminal = builder layout(name, p(q)); q
+  }
   
   def regular[A,ValA](symbol: org.meerkat.tree.NonterminalSymbol, p: => AbstractAlternationBuilder[A,ValA])(implicit builder: CanBuildEBNF[A,ValA], obj: ClassTag[Result[A]]): builder.Regular = { 
     import builder._
     lazy val q: Regular = builder.regular(symbol, memoize(p(q))); q
+  }
+  //added below 
+  def regularNoMemo[A,ValA](symbol: org.meerkat.tree.NonterminalSymbol, p: => AbstractAlternationBuilder[A,ValA])(implicit builder: CanBuildEBNF[A,ValA], obj: ClassTag[Result[A]]): builder.Regular = { 
+      import builder._
+      lazy val q: Regular = builder.regular(symbol, p(q)); q
   }
   
   def groupSeq[A,ValA](p: => AbstractSequenceBuilder[A,_])(implicit builder: CanBuildEBNF[A,ValA], b: CanBuildAlternative[A], obj: ClassTag[Result[A]]): builder.Group = { 
     import builder._
     lazy val q: Group = builder.group(memoize(alt(q, p))); q
   }
+  //added below 
+  def groupSeqNoMemo[A,ValA](p: => AbstractSequenceBuilder[A,_])(implicit builder: CanBuildEBNF[A,ValA], b: CanBuildAlternative[A], obj: ClassTag[Result[A]]): builder.Group = { 
+      import builder._
+      lazy val q: Group = builder.group(alt(q,p)); q
+  }
   
   def groupAlt[A,ValA](p: => AbstractAlternationBuilder[A,_])(implicit builder: CanBuildEBNF[A,ValA], obj: ClassTag[Result[A]]): builder.Group = { 
     import builder._
     lazy val q: Group = builder.group(memoize(p(q))); q
+  }
+  //added below 
+  def groupAltNoMemo[A,ValA](p: => AbstractAlternationBuilder[A,_])(implicit builder: CanBuildEBNF[A,ValA], obj: ClassTag[Result[A]]): builder.Group = { 
+      import builder._
+      lazy val q: Group = builder.group(p(q)); q
   }
   
   def preFilter[B,Val](p: AbstractSymbol[B,Val], pred: (Input,Int) => Boolean, prefix: String)(implicit builder: CanBuildNonterminal[B,Val]): builder.Symbol = {
