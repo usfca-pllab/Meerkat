@@ -287,7 +287,7 @@ object AbstractCPSParsers extends AbstractParsers {  import AbstractParser._
   //added below
   def nonterminalSymNoMemo[A,ValA](name: String, p: => AbstractSymbol[A,ValA])(implicit builder: CanBuildNonterminal[A,ValA], b: CanBuildAlternative[A], obj: ClassTag[Result[A]]): builder.Nonterminal = { 
       import builder._
-      lazy val q: Nonterminal = nonterminal(name, alt(q,p)); q
+      lazy val q: Nonterminal = nonterminal(name, delay(alt(q,p))); q
   } 
   def nonterminalSeq[A,ValA](name: String, p: => AbstractSequenceBuilder[A,ValA])(implicit builder: CanBuildNonterminal[A,ValA], b: CanBuildAlternative[A], obj: ClassTag[Result[A]]): builder.Nonterminal = { 
     import builder._
@@ -296,7 +296,7 @@ object AbstractCPSParsers extends AbstractParsers {  import AbstractParser._
   //added below 
   def nonterminalSeqNoMemo[A,ValA](name: String, p: => AbstractSequenceBuilder[A,ValA])(implicit builder: CanBuildNonterminal[A,ValA], b: CanBuildAlternative[A], obj: ClassTag[Result[A]]): builder.Nonterminal = { 
       import builder._
-      lazy val q: Nonterminal = nonterminal(name, alt(q,p)); q
+      lazy val q: Nonterminal = nonterminal(name, delay(alt(q,p))); q
   }
   def nonterminalAlt[A,ValA](name: String, p: => AbstractAlternationBuilder[A,ValA])(implicit builder: CanBuildNonterminal[A,ValA], obj: ClassTag[Result[A]]): builder.Nonterminal = { 
     import builder._
@@ -305,7 +305,7 @@ object AbstractCPSParsers extends AbstractParsers {  import AbstractParser._
   //added below
   def nonterminalAltNoMemo[A,ValA](name: String, p: => AbstractAlternationBuilder[A,ValA])(implicit builder: CanBuildNonterminal[A,ValA], obj: ClassTag[Result[A]]): builder.Nonterminal = { 
       import builder._
-      lazy val q: Nonterminal = builder nonterminal(name, p(q)); q
+      lazy val q: Nonterminal = builder nonterminal(name, delay(p(q))); q
   }
   
   def layoutSym[A,ValA <: NoValue](name: String, p: => AbstractSymbol[A,ValA])(implicit builder: CanBuildLayout[A,ValA], b: CanBuildAlternative[A], obj: ClassTag[Result[A]]): builder.Nonterminal = { 
@@ -413,6 +413,18 @@ object AbstractCPSParsers extends AbstractParsers {  import AbstractParser._
         val done = results == null
         if (!done) { results = null; q.reset }
       }
+
+    }
+  }
+
+  protected def delay[A: Memoizable](p: => AbstractParser[A])(implicit obj: ClassTag[Result[A]]): AbstractParser[A] = {
+    lazy val q: AbstractParser[A] = p
+    new AbstractParser[A] {
+      def apply(input: Input, i: Int, sppfLookup: SPPFLookup) = {
+        q(input,i,sppfLookup)
+      }
+      def symbol = q.symbol
+      override def reset = {}
     }
   }
   

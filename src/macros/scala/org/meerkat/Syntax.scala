@@ -56,6 +56,10 @@ object Syntax {
     def syn[T](p: Parsers.SequenceBuilder[T]) = macro makeNonterminalSeqWithName[T]
     def syn[T](p: AbstractSymbol[NonPackedNode,T]) = macro makeNonterminalSymWithName[T]
     
+    def synNoMemo[T](p: Parsers.AlternationBuilder[T]) = macro makeNonterminalAltWithNameNoMemo[T]
+    def synNoMemo[T](p: Parsers.SequenceBuilder[T]) = macro makeNonterminalSeqWithNameNoMemo[T]
+    def synNoMemo[T](p: AbstractSymbol[NonPackedNode,T]) = macro makeNonterminalSymWithNameNoMemo[T]
+    
     def layout(p: Parsers.AlternationBuilder[NoValue]) = macro makeLayoutAltWithName
     def layout(p: Parsers.SequenceBuilder[NoValue]) = macro makeLayoutSeqWithName
     def layout(p: AbstractSymbol[NonPackedNode,NoValue]) = macro makeLayoutSymWithName
@@ -67,6 +71,10 @@ object Syntax {
     def makeNonterminalAltWithName[T](c: Context)(p: c.Expr[AlternationBuilder[T]]): c.Expr[Nonterminal & T] = makeCallWithName (c, "Parsers.ntAlt")
     def makeNonterminalSeqWithName[T](c: Context)(p: c.Expr[SequenceBuilder[T]]): c.Expr[Nonterminal & T] = makeCallWithName (c, "Parsers.ntSeq")
     def makeNonterminalSymWithName[T](c: Context)(p: c.Expr[AbstractSymbol[NonPackedNode,T]]): c.Expr[Nonterminal & T] = makeCallWithName (c, "Parsers.ntSym")
+    
+    def makeNonterminalAltWithNameNoMemo[T](c: Context)(p: c.Expr[AlternationBuilder[T]]): c.Expr[Nonterminal & T] = makeCallWithName (c, "Parsers.ntAltNoMemo")
+    def makeNonterminalSeqWithNameNoMemo[T](c: Context)(p: c.Expr[SequenceBuilder[T]]): c.Expr[Nonterminal & T] = makeCallWithName (c, "Parsers.ntSeqNoMemo")
+    def makeNonterminalSymWithNameNoMemo[T](c: Context)(p: c.Expr[AbstractSymbol[NonPackedNode,T]]): c.Expr[Nonterminal & T] = makeCallWithName (c, "Parsers.ntSymNoMemo")
     
     def makeLayoutAltWithName(c: Context)(p: c.Expr[AlternationBuilder[NoValue]]): c.Expr[Layout] = makeCallWithName (c, "Parsers.ltAlt")
     def makeLayoutSeqWithName(c: Context)(p: c.Expr[SequenceBuilder[NoValue]]): c.Expr[Layout] = makeCallWithName (c, "Parsers.ltSeq")
