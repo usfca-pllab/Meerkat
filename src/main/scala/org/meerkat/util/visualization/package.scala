@@ -68,8 +68,8 @@ package object visualization {
       writer.write(sb.toString)
       writer.close()
       
-      println(s"/usr/local/bin/dot -Tpdf -o $name.pdf $path/$name.dot")
-      s"/usr/local/bin/dot -Tpdf -o $name.pdf $path/$name.dot"!
+      println(s"/usr/bin/env dot -Tpdf -o $name.pdf $path/$name.dot")
+      s"/usr/bin/env dot -Tpdf -o $name.pdf $path/$name.dot"!
   }
 
   
