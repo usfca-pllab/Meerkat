@@ -58,6 +58,8 @@ class SemanticActionExecutor(amb: (Set[Any], Int, Int) => Any,
                              tn : (Int, Int) => Any,
                              int: (Rule, Any) => Any,
                              nt:  (Rule, Any, Int, Int) => Any) extends SPPFVisitor {
+  import org.meerkat.parsers.~
+  
  
    type T = Any
   
@@ -100,7 +102,7 @@ class SemanticActionExecutor(amb: (Set[Any], Int, Int) => Any,
      case ((), ())              => ()
      case (l, ())               => int(p.ruleType, l)
      case ((), r)               => int(p.ruleType, r)
-     case (l, r)                => int(p.ruleType, (l, r))
+     case (l, r)                => int(p.ruleType, new ~(l, r))
    } 
    
    def nonterminal(p: PackedNode, leftExtent: Int, rightExtent: Int): Any = 
@@ -133,12 +135,11 @@ object SemanticAction {
     case StarList(s, xs)       => convert(xs)
     case PlusList(s, xs)       => convert(xs)
     case OptList(s, xs)        => convert(xs)
-    // case Seq()                => ()
     case l: Seq[Any]          => l.map { convert(_) }.filter { _ != ()}
-    case (x, y: EBNFList)      => convert(x, convert(y))
-    case (x: EBNFList, y)      => convert(convert(x), y)
-    case ((), ())              => ()
-    case (x, y)                => new ~(convert(x), convert(y))
+    case (x ~ (y: EBNFList))      => convert(new ~(x,convert(y)))
+    case ((x: EBNFList) ~ y)      => convert(new ~(convert(x), y))
+    case (~((),()))              => ()
+    case (x ~ y)                => new ~(convert(x), convert(y))
     case _                     => t 
   }
   
@@ -146,10 +147,11 @@ object SemanticAction {
   
   def t(input: Input)(l: Int, r: Int) = ()
       
-  def nt(input: Input)(t: Rule, v: Any, l: Int, r: Int) =
+  def nt(input: Input)(t: Rule, v: Any, l: Int, r: Int) = {
     if (t.action.isDefined)
       if (v == ()) t.action.get(input.substring(l, r)) else t.action.get(convert(v)) 
     else convert(v)
+  }
     
   def int(input: Input)(t: Rule, v: Any) = 
     if (t.action.isDefined)
@@ -161,6 +163,8 @@ object SemanticAction {
 }
 
 object TreeBuilder {
+  
+  import org.meerkat.parsers.~
 
    def convert(t: Any): Tree = t match {
     case StarList(s, xs) => RuleNode(RegularRule(Star(s)), xs map { convert(_) }) 
@@ -170,8 +174,8 @@ object TreeBuilder {
   }
   
   def flatten(t: Any): Seq[Tree] = t match {
-    case (t: (_, _), y)  => flatten(t) :+ convert(y)
-    case (x, y)          => List(convert(x), convert(y))
+    case (~(t: ~[_, _], y))  => flatten(t) :+ convert(y)
+    case (~(x, y))          => List(convert(x), convert(y))
     case ()              => List()
     case x               => List(convert(x))
   }
