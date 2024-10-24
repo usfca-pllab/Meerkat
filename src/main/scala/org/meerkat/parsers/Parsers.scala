@@ -306,6 +306,7 @@ object Parsers { import AbstractCPSParsers._
   def ntAltNoMemo[Val](name: String, p: => AlternationBuilder[Val]) = nonterminalAltNoMemo(name, p)
   
   def ntSeq[Val](name: String, p: => SequenceBuilder[Val]) = nonterminalSeq(name, p)
+  def ntSeqWithAction[Val](name: String, p: => SequenceBuilderWithAction[Val]) = nonterminalSeq(name, p)
   //added below 
   def ntSeqNoMemo[Val](name: String, p: => SequenceBuilder[Val]) = nonterminalSeqNoMemo(name, p)
 

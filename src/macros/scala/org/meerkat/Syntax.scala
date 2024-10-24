@@ -54,6 +54,7 @@ object Syntax {
     
     def syn[T](p: Parsers.AlternationBuilder[T]) = macro makeNonterminalAltWithName[T]
     def syn[T](p: Parsers.SequenceBuilder[T]) = macro makeNonterminalSeqWithName[T]
+    def syn[T](p: Parsers.SequenceBuilderWithAction[T]) = macro makeNonterminalSeqActionWithName[T]
     def syn[T](p: AbstractSymbol[NonPackedNode,T]) = macro makeNonterminalSymWithName[T]
     
     def synNoMemo[T](p: Parsers.AlternationBuilder[T]) = macro makeNonterminalAltWithNameNoMemo[T]
@@ -70,6 +71,7 @@ object Syntax {
     
     def makeNonterminalAltWithName[T](c: Context)(p: c.Expr[AlternationBuilder[T]]): c.Expr[Nonterminal & T] = makeCallWithName (c, "Parsers.ntAlt")
     def makeNonterminalSeqWithName[T](c: Context)(p: c.Expr[SequenceBuilder[T]]): c.Expr[Nonterminal & T] = makeCallWithName (c, "Parsers.ntSeq")
+    def makeNonterminalSeqActionWithName[T](c: Context)(p: c.Expr[Parsers.SequenceBuilderWithAction[T]]): c.Expr[Nonterminal & T] = makeCallWithName (c, "Parsers.ntSeqWithAction")
     def makeNonterminalSymWithName[T](c: Context)(p: c.Expr[AbstractSymbol[NonPackedNode,T]]): c.Expr[Nonterminal & T] = makeCallWithName (c, "Parsers.ntSym")
     
     def makeNonterminalAltWithNameNoMemo[T](c: Context)(p: c.Expr[AlternationBuilder[T]]): c.Expr[Nonterminal & T] = makeCallWithName (c, "Parsers.ntAltNoMemo")
