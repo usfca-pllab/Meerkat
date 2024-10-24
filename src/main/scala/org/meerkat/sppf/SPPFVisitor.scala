@@ -133,7 +133,7 @@ object SemanticAction {
     case StarList(s, xs)       => convert(xs)
     case PlusList(s, xs)       => convert(xs)
     case OptList(s, xs)        => convert(xs)
-    case Seq()                => ()
+    // case Seq()                => ()
     case l: Seq[Any]          => l.map { convert(_) }.filter { _ != ()}
     case (x, y: EBNFList)      => convert(x, convert(y))
     case (x: EBNFList, y)      => convert(convert(x), y)
@@ -146,7 +146,7 @@ object SemanticAction {
   
   def t(input: Input)(l: Int, r: Int) = ()
       
-  def nt(input: Input)(t: Rule, v: Any, l: Int, r: Int) = 
+  def nt(input: Input)(t: Rule, v: Any, l: Int, r: Int) =
     if (t.action.isDefined)
       if (v == ()) t.action.get(input.substring(l, r)) else t.action.get(convert(v)) 
     else convert(v)
