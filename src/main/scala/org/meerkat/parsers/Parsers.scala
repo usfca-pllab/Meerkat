@@ -309,6 +309,7 @@ object Parsers { import AbstractCPSParsers._
   def ntSeqWithAction[Val](name: String, p: => SequenceBuilderWithAction[Val]) = nonterminalSeq(name, p)
   //added below 
   def ntSeqNoMemo[Val](name: String, p: => SequenceBuilder[Val]) = nonterminalSeqNoMemo(name, p)
+  def ntSeqWithActionNoMemo[Val](name: String, p: => SequenceBuilderWithAction[Val]) = nonterminalSeqNoMemo(name, p)
 
   def ntSym[Val](name: String, p: => AbstractSymbol[NonPackedNode,Val]) = nonterminalSym(name, p)
   //added below wrapper
