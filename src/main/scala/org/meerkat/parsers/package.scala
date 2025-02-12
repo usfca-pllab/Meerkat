@@ -121,7 +121,7 @@ package object parsers {
     Trampoline.run
   }
 
-  private def getSPPF[T,V](parser: AbstractCPSParsers.AbstractSymbol[T,V], input: Input): ParseResult[ParseError, (NonPackedNode, ParseTimeStatistics, SPPFStatistics)] = {
+  def getSPPF[T,V](parser: AbstractCPSParsers.AbstractSymbol[T,V], input: Input): ParseResult[ParseError, (NonPackedNode, ParseTimeStatistics, SPPFStatistics)] = {
 
     parser.reset
     Layout.LAYOUT.get.reset
