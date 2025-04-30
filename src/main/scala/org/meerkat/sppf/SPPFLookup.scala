@@ -91,7 +91,6 @@ class DefaultSPPFLookup(input: Input) extends SPPFLookup {
     val ambiguousAfter = node.isAmbiguous
     
     if (!ambiguousBefore && ambiguousAfter) {
-      println(head.toString() + "(" + leftExtent + ", " + rightExtent + ")")
       countAmbiguousNodes += 1 
     }
     
